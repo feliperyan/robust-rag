@@ -4,13 +4,70 @@
 	--font-sans:
 		"Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
 		"Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	
+	/* Burnt Orange Theme Colors */
+	--color-primary: 24.6 95% 53.1%;
+	--color-primary-hover: 22.2 82.5% 48.8%;
+	--color-primary-light: 33.3 100% 96.5%;
+	--color-primary-border: 24.8 95.2% 89%;
+	
+	/* Neutral Colors */
+	--color-background: 0 0% 100%;
+	--color-foreground: 24 9.8% 10%;
+	--color-muted: 60 4.8% 95.9%;
+	--color-muted-foreground: 25 5.3% 44.7%;
+	
+	/* Component Colors */
+	--color-card: 0 0% 100%;
+	--color-card-foreground: 24 9.8% 10%;
+	--color-border: 20 5.9% 90%;
+	--color-input: 20 5.9% 90%;
+	--color-ring: 24.6 95% 53.1%;
+	
+	/* Semantic Colors */
+	--color-destructive: 0 84.2% 60.2%;
+	--color-success: 142.1 76.2% 36.3%;
+	
+	--radius: 0.5rem;
 }
 
 html,
 body {
-	@apply bg-white dark:bg-gray-950;
+	@apply bg-white text-foreground;
+}
 
-	@media (prefers-color-scheme: dark) {
-		color-scheme: dark;
-	}
+/* Custom scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: hsl(var(--color-primary-border));
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: hsl(var(--color-primary));
+}
+
+/* Panel transitions */
+.panel-enter {
+	opacity: 0;
+	transform: translateY(10px);
+}
+
+.panel-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: all 300ms ease-out;
+}
+
+/* Drag over state for file upload */
+.drag-over {
+	border-color: hsl(var(--color-primary));
+	background-color: hsl(var(--color-primary-light));
 }

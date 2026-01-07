@@ -15,11 +15,16 @@
     "publish": true
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "hono": "4.11.1",
     "isbot": "5.1.32",
+    "lucide-react": "^0.562.0",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "react-router": "7.9.6"
+    "react-router": "7.9.6",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.15.3",
@@ -41,7 +46,11 @@
     "deploy": "npm run build && wrangler deploy",
     "dev": "react-router dev",
     "preview": "npm run build && vite preview",
-    "typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
+    "typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
+    "db:migrate": "wrangler d1 migrations apply ai-compendium-db --remote",
+    "db:migrate:local": "wrangler d1 migrations apply ai-compendium-db --local",
+    "db:list": "wrangler d1 migrations list ai-compendium-db --remote",
+    "db:list:local": "wrangler d1 migrations list ai-compendium-db --local"
   },
   "type": "module"
 }
