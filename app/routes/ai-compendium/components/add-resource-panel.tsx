@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRevalidator } from "react-router";
 import { Plus, CheckCircle, X, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -9,6 +10,7 @@ import { FileUploadZone } from "./ui/file-upload-zone";
 import type { NewResource } from "../lib/types";
 
 export function AddResourcePanel() {
+	const revalidator = useRevalidator();
 	const [formData, setFormData] = useState<NewResource>({
 		title: "",
 		sourceUrl: "",
@@ -110,6 +112,9 @@ export function AddResourcePanel() {
 			console.log("Upload successful:", result);
 			setShowSuccess(true);
 			setUploadProgress(100);
+
+			// Revalidate to refresh the papers list
+			revalidator.revalidate();
 
 			// Reset form after 3 seconds
 			setTimeout(() => {

@@ -1,4 +1,4 @@
-import { ExternalLink, Calendar } from "lucide-react";
+import { ExternalLink, Calendar, FileText } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import type { ResearchPaper } from "../../lib/types";
 
@@ -24,8 +24,24 @@ export function PaperCard({ paper }: PaperCardProps) {
 						{paper.authors}
 					</p>
 				)}
+				{paper.fileSize && (
+					<p className="text-xs text-[#a8a29e] mt-1">
+						{(paper.fileSize / 1024 / 1024).toFixed(2)} MB
+					</p>
+				)}
 			</CardContent>
-			<CardFooter className="pt-0">
+			<CardFooter className="pt-0 flex flex-col gap-2 items-start">
+				{paper.filename && (
+					<a
+						href={`/api/files/${paper.filename}`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-sm text-[#ea580c] hover:text-[#c2410c] font-medium flex items-center gap-1 hover:underline"
+					>
+						<FileText className="h-3 w-3" />
+						Download PDF
+					</a>
+				)}
 				<a
 					href={paper.sourceUrl}
 					target="_blank"

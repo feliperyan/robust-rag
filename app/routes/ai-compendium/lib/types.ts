@@ -4,6 +4,9 @@ export interface ResearchPaper {
 	publishDate: string;
 	authors: string;
 	sourceUrl: string;
+	filename?: string;
+	uploadedAt?: string;
+	fileSize?: number;
 	abstract?: string;
 }
 

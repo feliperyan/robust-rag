@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useLoaderData } from "react-router";
 import type { Route } from "./+types/ai-compendium";
 import { TogglePanelController } from "./ai-compendium/components/toggle-panel-controller";
 import { AskQuestionPanel } from "./ai-compendium/components/ask-question-panel";
 import { LibraryPanel } from "./ai-compendium/components/library-panel";
 import { AddResourcePanel } from "./ai-compendium/components/add-resource-panel";
-import { researchPapers, searchQueries } from "./ai-compendium/lib/dummy-data";
-import type { PanelType } from "./ai-compendium/lib/types";
+import { searchQueries } from "./ai-compendium/lib/dummy-data";
+import type { PanelType, ResearchPaper } from "./ai-compendium/lib/types";
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -17,7 +18,36 @@ export function meta({}: Route.MetaArgs) {
 	];
 }
 
+export async function loader({ context }: Route.LoaderArgs) {
+	try {
+		// Fetch papers from D1 database
+		const result = await context.cloudflare.env.DB.prepare(
+			`SELECT id, title, source_url, filename, authors, publish_date, uploaded_at, file_size
+			 FROM papers
+			 ORDER BY uploaded_at DESC`
+		).all();
+
+		// Transform database results to match ResearchPaper interface
+		const papers: ResearchPaper[] = (result.results || []).map((row: any) => ({
+			id: row.id,
+			title: row.title,
+			publishDate: row.publish_date || "Unknown",
+			authors: row.authors || "Unknown",
+			sourceUrl: row.source_url,
+			filename: row.filename,
+			uploadedAt: row.uploaded_at,
+			fileSize: row.file_size,
+		}));
+
+		return { papers };
+	} catch (error) {
+		console.error("Error loading papers:", error);
+		return { papers: [] };
+	}
+}
+
 export default function AICompendium() {
+	const { papers } = useLoaderData<typeof loader>();
 	const [activePanel, setActivePanel] = useState<PanelType>("ask");
 
 	return (
@@ -52,12 +82,12 @@ export default function AICompendium() {
 								: "opacity-0 absolute inset-0 pointer-events-none translate-y-4"
 						}`}
 					>
-						{activePanel === "ask" && (
-							<AskQuestionPanel
-								searchQueries={searchQueries}
-								papers={researchPapers}
-							/>
-						)}
+					{activePanel === "ask" && (
+						<AskQuestionPanel
+							searchQueries={searchQueries}
+							papers={papers}
+						/>
+					)}
 					</div>
 
 					<div
@@ -67,9 +97,9 @@ export default function AICompendium() {
 								: "opacity-0 absolute inset-0 pointer-events-none translate-y-4"
 						}`}
 					>
-						{activePanel === "library" && (
-							<LibraryPanel papers={researchPapers} />
-						)}
+					{activePanel === "library" && (
+						<LibraryPanel papers={papers} />
+					)}
 					</div>
 
 					<div
