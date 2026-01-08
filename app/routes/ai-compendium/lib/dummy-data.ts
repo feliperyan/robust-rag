@@ -101,18 +101,126 @@ export const researchPapers: ResearchPaper[] = [
 
 export const searchQueries: SearchQuery[] = [
 	{
-		query: "What are transformer models?",
-		answer: "Transformer models are a type of neural network architecture that revolutionized natural language processing and other sequence-to-sequence tasks. Introduced in the seminal paper 'Attention Is All You Need' by Vaswani et al., transformers rely entirely on attention mechanisms, dispensing with recurrence and convolutions entirely.\n\nThe key innovation of transformers is the self-attention mechanism, which allows the model to weigh the importance of different parts of the input sequence when processing each element. This enables transformers to capture long-range dependencies more effectively than previous architectures like RNNs and LSTMs. Transformers have become the foundation for many modern language models, including BERT, GPT, and more recent large language models like Llama 2.",
-		references: ["paper-1", "paper-2", "paper-3", "paper-8"],
+		object: "vector_store.search_results.page",
+		search_query: "What are transformer models?",
+		response: "Transformer models are a type of neural network architecture that revolutionized natural language processing and other sequence-to-sequence tasks. Introduced in the seminal paper 'Attention Is All You Need' by Vaswani et al., transformers rely entirely on attention mechanisms, dispensing with recurrence and convolutions entirely.\n\nThe key innovation of transformers is the self-attention mechanism, which allows the model to weigh the importance of different parts of the input sequence when processing each element. This enables transformers to capture long-range dependencies more effectively than previous architectures like RNNs and LSTMs. Transformers have become the foundation for many modern language models, including BERT, GPT, and more recent large language models like Llama 2.",
+		data: [
+			{
+				file_id: "paper-1",
+				filename: "attention-is-all-you-need.pdf",
+				score: 0.95,
+				attributes: {
+					modified_date: 1497484800000,
+					folder: "transformers/",
+				},
+				content: [
+					{
+						id: "paper-1",
+						type: "text",
+						text: "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks.",
+					},
+				],
+			},
+			{
+				file_id: "paper-2",
+				filename: "bert-pretraining.pdf",
+				score: 0.88,
+				attributes: {
+					modified_date: 1539129600000,
+					folder: "transformers/",
+				},
+				content: [
+					{
+						id: "paper-2",
+						type: "text",
+						text: "We introduce a new language representation model called BERT.",
+					},
+				],
+			},
+		],
+		has_more: false,
+		next_page: null,
 	},
 	{
-		query: "How does attention mechanism work?",
-		answer: "The attention mechanism is a fundamental component that allows neural networks to focus on specific parts of the input when producing an output. In the context of transformers, the self-attention mechanism computes a weighted sum of all input representations, where the weights are determined by the similarity between different positions in the sequence.\n\nThe attention mechanism works through three main components: queries, keys, and values. For each position in the sequence, the model computes attention scores by comparing the query vector with all key vectors, then uses these scores to create a weighted combination of value vectors. This was first effectively demonstrated in neural machine translation tasks and later became the cornerstone of the transformer architecture, enabling models to handle complex dependencies in sequences without the sequential processing limitations of recurrent networks.",
-		references: ["paper-1", "paper-6"],
+		object: "vector_store.search_results.page",
+		search_query: "How does attention mechanism work?",
+		response: "The attention mechanism is a fundamental component that allows neural networks to focus on specific parts of the input when producing an output. In the context of transformers, the self-attention mechanism computes a weighted sum of all input representations, where the weights are determined by the similarity between different positions in the sequence.\n\nThe attention mechanism works through three main components: queries, keys, and values. For each position in the sequence, the model computes attention scores by comparing the query vector with all key vectors, then uses these scores to create a weighted combination of value vectors. This was first effectively demonstrated in neural machine translation tasks and later became the cornerstone of the transformer architecture, enabling models to handle complex dependencies in sequences without the sequential processing limitations of recurrent networks.",
+		data: [
+			{
+				file_id: "paper-1",
+				filename: "attention-is-all-you-need.pdf",
+				score: 0.92,
+				attributes: {
+					modified_date: 1497484800000,
+					folder: "transformers/",
+				},
+				content: [
+					{
+						id: "paper-1",
+						type: "text",
+						text: "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks.",
+					},
+				],
+			},
+			{
+				file_id: "paper-6",
+				filename: "neural-machine-translation.pdf",
+				score: 0.85,
+				attributes: {
+					modified_date: 1410307200000,
+					folder: "nmt/",
+				},
+				content: [
+					{
+						id: "paper-6",
+						type: "text",
+						text: "Neural machine translation is a recently proposed approach to machine translation.",
+					},
+				],
+			},
+		],
+		has_more: false,
+		next_page: null,
 	},
 	{
-		query: "What is the difference between BERT and GPT?",
-		answer: "BERT (Bidirectional Encoder Representations from Transformers) and GPT (Generative Pre-trained Transformer) are both transformer-based language models, but they differ in their architecture and training objectives. BERT uses a bidirectional approach, meaning it considers context from both left and right when processing each token, making it particularly effective for understanding tasks like question answering and classification.\n\nIn contrast, GPT models like GPT-3 are autoregressive and unidirectional, processing text from left to right and trained to predict the next token in a sequence. This makes GPT models especially powerful for text generation tasks. BERT is pre-trained using masked language modeling (predicting masked tokens) and next sentence prediction, while GPT models are trained purely on next-token prediction. The few-shot learning capabilities demonstrated by GPT-3 have shown that large language models can perform many tasks without fine-tuning, which differs from BERT's typical usage pattern of fine-tuning for specific downstream tasks.",
-		references: ["paper-2", "paper-3"],
+		object: "vector_store.search_results.page",
+		search_query: "What is the difference between BERT and GPT?",
+		response: "BERT (Bidirectional Encoder Representations from Transformers) and GPT (Generative Pre-trained Transformer) are both transformer-based language models, but they differ in their architecture and training objectives. BERT uses a bidirectional approach, meaning it considers context from both left and right when processing each token, making it particularly effective for understanding tasks like question answering and classification.\n\nIn contrast, GPT models like GPT-3 are autoregressive and unidirectional, processing text from left to right and trained to predict the next token in a sequence. This makes GPT models especially powerful for text generation tasks. BERT is pre-trained using masked language modeling (predicting masked tokens) and next sentence prediction, while GPT models are trained purely on next-token prediction. The few-shot learning capabilities demonstrated by GPT-3 have shown that large language models can perform many tasks without fine-tuning, which differs from BERT's typical usage pattern of fine-tuning for specific downstream tasks.",
+		data: [
+			{
+				file_id: "paper-2",
+				filename: "bert-pretraining.pdf",
+				score: 0.93,
+				attributes: {
+					modified_date: 1539129600000,
+					folder: "transformers/",
+				},
+				content: [
+					{
+						id: "paper-2",
+						type: "text",
+						text: "We introduce a new language representation model called BERT.",
+					},
+				],
+			},
+			{
+				file_id: "paper-3",
+				filename: "gpt3-few-shot-learners.pdf",
+				score: 0.91,
+				attributes: {
+					modified_date: 1590969600000,
+					folder: "llm/",
+				},
+				content: [
+					{
+						id: "paper-3",
+						type: "text",
+						text: "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus.",
+					},
+				],
+			},
+		],
+		has_more: false,
+		next_page: null,
 	},
 ];

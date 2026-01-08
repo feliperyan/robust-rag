@@ -10,10 +10,31 @@ export interface ResearchPaper {
 	abstract?: string;
 }
 
+export interface SearchResultContent {
+	id: string;
+	type: string;
+	text: string;
+}
+
+export interface SearchResultData {
+	file_id: string;
+	filename: string;
+	score: number;
+	attributes: {
+		modified_date: number;
+		folder: string;
+	};
+	content: SearchResultContent[];
+}
+
 export interface SearchQuery {
-	query: string;
-	answer: string;
-	references: string[]; // Array of paper IDs
+	object: string;
+	search_query: string;
+	response: string;
+	data: SearchResultData[];
+	has_more: boolean;
+	next_page: string | null;
+	papers?: ResearchPaper[];
 }
 
 export interface NewResource {

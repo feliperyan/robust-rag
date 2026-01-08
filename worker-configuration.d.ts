@@ -9,6 +9,7 @@ declare namespace Cloudflare {
 		VALUE_FROM_CLOUDFLARE: "Hello from Hono/CF";
 		RAG_BUCKET: R2Bucket;
 		DB: D1Database;
+		AI: Ai;
 	}
 }
 interface Env extends Cloudflare.Env {}

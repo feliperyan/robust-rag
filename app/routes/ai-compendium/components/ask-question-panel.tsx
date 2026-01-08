@@ -18,24 +18,39 @@ export function AskQuestionPanel({
 	const [query, setQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentResult, setCurrentResult] = useState<SearchQuery | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
-	const handleSearch = () => {
+	const handleSearch = async () => {
 		if (!query.trim()) return;
 
 		setIsLoading(true);
 		setCurrentResult(null);
+		setError(null);
 
-		// Simulate API call delay
-		setTimeout(() => {
-			// Find matching query (case-insensitive partial match)
-			const result = searchQueries.find((sq) =>
-				sq.query.toLowerCase().includes(query.toLowerCase()) ||
-				query.toLowerCase().includes(sq.query.toLowerCase())
-			);
+		try {
+			const response = await fetch("/api/ai-search", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ query }),
+			});
 
-			setCurrentResult(result || null);
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({})) as { error?: string };
+				throw new Error(errorData.error || `API error: ${response.status}`);
+			}
+
+			const result = await response.json() as SearchQuery;
+			setCurrentResult(result);
+		} catch (err) {
+			console.error("AI Search error:", err);
+			const errorMessage = err instanceof Error ? err.message : "Failed to search. Please try again.";
+			setError(errorMessage);
+			setCurrentResult(null);
+		} finally {
 			setIsLoading(false);
-		}, 1000);
+		}
 	};
 
 	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -45,9 +60,11 @@ export function AskQuestionPanel({
 	};
 
 	// Get referenced papers for current result
-	const referencePapers = currentResult
-		? currentResult.references
-				.map((refId) => papers.find((p) => p.id === refId))
+	const referencePapers = currentResult?.papers
+		? currentResult.data
+				.map((item) => 
+					currentResult.papers?.find((p) => p.filename === item.filename)
+				)
 				.filter((p): p is ResearchPaper => p !== undefined)
 		: [];
 
@@ -66,7 +83,7 @@ export function AskQuestionPanel({
 						placeholder="e.g., What are transformer models?"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
-						onKeyPress={handleKeyPress}
+						onKeyUp={handleKeyPress}
 						className="flex-1"
 					/>
 					<Button
@@ -89,12 +106,18 @@ export function AskQuestionPanel({
 				</div>
 
 				{/* Results Area */}
-				{!isLoading && !currentResult && query && (
+				{error && (
+					<div className="mt-6 text-center py-8 text-red-600">
+						<p className="font-semibold">Error</p>
+						<p className="text-sm mt-2">{error}</p>
+					</div>
+				)}
+
+				{!isLoading && !currentResult && !error && query && (
 					<div className="mt-6 text-center py-8 text-[#78716c]">
 						<p>No results found for "{query}"</p>
 						<p className="text-sm mt-2">
-							Try: "What are transformer models?", "How does attention
-							work?", or "BERT vs GPT"
+							Try asking about AI research topics, models, and techniques
 						</p>
 					</div>
 				)}
@@ -110,7 +133,7 @@ export function AskQuestionPanel({
 
 				{currentResult && !isLoading && (
 					<SearchResults
-						answer={currentResult.answer}
+						answer={currentResult.response}
 						referencePapers={referencePapers}
 					/>
 				)}

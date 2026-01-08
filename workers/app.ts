@@ -113,6 +113,60 @@ app.get("/api/papers", async (c) => {
 	}
 });
 
+// AI Search endpoint
+app.post("/api/ai-search", async (c) => {
+	try {
+		const body = await c.req.json();
+		const { query } = body;
+
+		if (!query || typeof query !== "string") {
+			return c.json({ error: "Query is required" }, 400);
+		}
+
+		const answer = await c.env.AI.autorag("ai-compendium").aiSearch({
+			query,
+			rewrite_query: true,
+			max_num_results: 10,
+			ranking_options: {
+				score_threshold: 0.3
+			},
+			reranking: {
+				enabled: true,
+				model: "@cf/baai/bge-reranker-base"
+			},
+			stream: false,
+		});
+
+		// Extract unique filenames from AI response
+		const filenames = [...new Set(answer.data.map(item => item.filename))];
+
+		// Query D1 for paper metadata if we have filenames
+		let papers: any[] = [];
+		if (filenames.length > 0) {
+			const placeholders = filenames.map(() => "?").join(",");
+			const result = await c.env.DB.prepare(
+				`SELECT id, title, source_url as sourceUrl, filename, authors, publish_date as publishDate, uploaded_at as uploadedAt, file_size as fileSize
+				 FROM papers 
+				 WHERE filename IN (${placeholders})`
+			).bind(...filenames).all();
+
+			papers = result.results || [];
+		}
+
+		// Return enriched response with papers
+		return c.json({
+			...answer,
+			papers,
+		});
+	} catch (error) {
+		console.error("AI Search error:", error);
+		return c.json({ 
+			error: "AI Search failed", 
+			details: error instanceof Error ? error.message : "Unknown error" 
+		}, 500);
+	}
+});
+
 // React Router handler (must be last)
 app.get("*", (c) => {
 	const requestHandler = createRequestHandler(
