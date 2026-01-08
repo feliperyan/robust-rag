@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, Link } from "react-router";
 import type { Route } from "./+types/ai-compendium";
 import { TogglePanelController } from "./ai-compendium/components/toggle-panel-controller";
 import { AskQuestionPanel } from "./ai-compendium/components/ask-question-panel";
@@ -7,6 +7,7 @@ import { LibraryPanel } from "./ai-compendium/components/library-panel";
 import { AddResourcePanel } from "./ai-compendium/components/add-resource-panel";
 import { searchQueries } from "./ai-compendium/lib/dummy-data";
 import type { PanelType, ResearchPaper } from "./ai-compendium/lib/types";
+import { useAuth } from "~/contexts/AuthContext";
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -18,7 +19,7 @@ export function meta({}: Route.MetaArgs) {
 	];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ context, request }: Route.LoaderArgs) {
 	try {
 		// Fetch papers from D1 database
 		const result = await context.cloudflare.env.DB.prepare(
@@ -48,6 +49,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 
 export default function AICompendium() {
 	const { papers } = useLoaderData<typeof loader>();
+	const { isAuthenticated } = useAuth();
 	const [activePanel, setActivePanel] = useState<PanelType>("ask");
 
 	return (
@@ -64,10 +66,20 @@ export default function AICompendium() {
 								Explore AI research papers and discover insights
 							</p>
 						</div>
-						<TogglePanelController
-							activePanel={activePanel}
-							onPanelChange={setActivePanel}
-						/>
+						<div className="flex items-center gap-3">
+							<TogglePanelController
+								activePanel={activePanel}
+								onPanelChange={setActivePanel}
+							/>
+							{isAuthenticated && (
+								<Link
+									to="/logout"
+									className="text-sm text-[#78716c] hover:text-[#ea580c] transition-colors underline-offset-4 hover:underline"
+								>
+									Logout
+								</Link>
+							)}
+						</div>
 					</div>
 					<div className="h-1 bg-gradient-to-r from-[#ea580c] to-[#fed7aa] rounded-full" />
 				</header>

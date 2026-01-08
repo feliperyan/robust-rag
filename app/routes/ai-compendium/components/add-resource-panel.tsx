@@ -8,9 +8,12 @@ import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { FileUploadZone } from "./ui/file-upload-zone";
 import type { NewResource } from "../lib/types";
+import { useAuth } from "~/contexts/AuthContext";
+import { LoginPrompt } from "./login-prompt";
 
 export function AddResourcePanel() {
 	const revalidator = useRevalidator();
+	const { accessToken, isAuthenticated } = useAuth();
 	const [formData, setFormData] = useState<NewResource>({
 		title: "",
 		sourceUrl: "",
@@ -53,6 +56,12 @@ export function AddResourcePanel() {
 
 	const uploadWithProgress = (formDataToSend: FormData): Promise<Response> => {
 		return new Promise((resolve, reject) => {
+			// Check if we have an access token
+			if (!accessToken) {
+				reject(new Error("Not authenticated. Please sign in first."));
+				return;
+			}
+
 			const xhr = new XMLHttpRequest();
 
 			xhr.upload.addEventListener("progress", (e) => {
@@ -79,6 +88,8 @@ export function AddResourcePanel() {
 			});
 
 			xhr.open("POST", "/api/upload");
+			// Add Authorization header with the Google OAuth token
+			xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
 			xhr.send(formDataToSend);
 		});
 	};
@@ -144,6 +155,11 @@ export function AddResourcePanel() {
 	};
 
 	const isFormValid = formData.title.trim() && formData.sourceUrl.trim();
+
+	// Show login prompt if user is not authenticated
+	if (!isAuthenticated) {
+		return <LoginPrompt />;
+	}
 
 	return (
 		<Card className="w-full">

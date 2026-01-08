@@ -12,11 +12,21 @@
 	"compatibility_date": "2025-10-08",
 	"main": "./workers/app.ts",
 	"vars": {
-		"VALUE_FROM_CLOUDFLARE": "Hello from Hono/CF"
+		"VALUE_FROM_CLOUDFLARE": "Hello from Hono/CF",
+		"GOOGLE_CLIENT_ID": "some_id",
+		"APPROVED_EMAIL_DOMAINS": "yourdomain.com"
 	},
 	"observability": {
 		"enabled": true
 	},
+	"workers_dev": true,
+	"preview_urls": true,
+	"routes": [
+		{
+			"pattern": "yourdomain.com", // If you have a custom domain that is
+			"custom_domain": true
+		}
+	],
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -71,6 +81,6 @@
 		}
 	],
 	"ai": {
-    	"binding": "AI"
-  	}
+		"binding": "AI"
+	}
 }

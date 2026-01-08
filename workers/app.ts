@@ -3,11 +3,83 @@ import { createRequestHandler } from "react-router";
 
 const app = new Hono<{ Bindings: Env }>();
 
+// Helper function to check if email domain is approved
+function isEmailDomainApproved(email: string, approvedDomains: string[]): boolean {
+	const domain = email.split('@')[1]?.toLowerCase();
+	if (!domain) return false;
+	return approvedDomains.some(approved => approved.toLowerCase() === domain);
+}
+
+// Authentication middleware
+async function verifyGoogleToken(
+	token: string, 
+	clientId: string
+): Promise<{ valid: boolean; email?: string }> {
+	try {
+		const response = await fetch(
+			`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
+		);
+		
+		if (!response.ok) {
+			return { valid: false };
+		}
+		
+		const data = await response.json() as { 
+			aud?: string; 
+			exp?: number;
+			email?: string;
+			email_verified?: boolean;
+		};
+		
+		// Verify the token is for our client ID and not expired
+		if (data.aud !== clientId) {
+			return { valid: false };
+		}
+		
+		if (data.exp && data.exp < Date.now() / 1000) {
+			return { valid: false };
+		}
+		
+		// Verify email is present and verified
+		if (!data.email || !data.email_verified) {
+			return { valid: false };
+		}
+		
+		return { valid: true, email: data.email };
+	} catch (error) {
+		console.error("Token verification error:", error);
+		return { valid: false };
+	}
+}
+
 // API Routes
 
 // Upload file to R2 and store metadata in D1
 app.post("/api/upload", async (c) => {
 	try {
+		// Check authentication
+		const authHeader = c.req.header("Authorization");
+		if (!authHeader || !authHeader.startsWith("Bearer ")) {
+			return c.json({ error: "Unauthorized: No token provided" }, 401);
+		}
+		
+		const token = authHeader.substring(7);
+		const clientId = c.env.GOOGLE_CLIENT_ID;
+		
+		const { valid, email } = await verifyGoogleToken(token, clientId);
+		if (!valid || !email) {
+			return c.json({ error: "Unauthorized: Invalid token" }, 401);
+		}
+		
+		// Check if email domain is approved
+		const approvedDomains = c.env.APPROVED_EMAIL_DOMAINS?.split(',').map((d: string) => d.trim()) || [];
+		if (!isEmailDomainApproved(email, approvedDomains)) {
+			console.log(`Upload rejected: User ${email} attempted to upload but domain not approved`);
+			return c.json({ error: "Unauthorized: Access denied" }, 403);
+		}
+		
+		console.log(`Upload authorized for user: ${email}`);
+		
 		const formData = await c.req.formData();
 		const file = formData.get("file") as File;
 		const title = formData.get("title") as string;
