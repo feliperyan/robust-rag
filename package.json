@@ -21,6 +21,7 @@
     "hono": "4.11.1",
     "isbot": "5.1.32",
     "lucide-react": "^0.562.0",
+    "markdown-to-jsx": "^9.5.0",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-router": "7.9.6",

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { ReferenceCard } from "./reference-card";
 import type { ResearchPaper } from "../../lib/types";
+import Markdown from "markdown-to-jsx";
 
 interface SearchResultsProps {
 	answer: string;
@@ -8,17 +9,15 @@ interface SearchResultsProps {
 }
 
 export function SearchResults({ answer, referencePapers }: SearchResultsProps) {
+	const formattedAnswer = answer.replace(/\\n/g, '\n');
+	
 	return (
 		<div className="space-y-6 mt-6">
 			{/* Textual Answer Section */}
 			<Card>
 				<CardContent className="pt-6">
-					<div className="prose prose-sm max-w-none">
-						{answer.split("\n\n").map((paragraph, index) => (
-							<p key={index} className="text-sm leading-relaxed mb-4 last:mb-0">
-								{paragraph}
-							</p>
-						))}
+					<div className="prose max-w-none">
+						<Markdown>{formattedAnswer}</Markdown>
 					</div>
 				</CardContent>
 			</Card>
